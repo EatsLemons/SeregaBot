@@ -52,6 +52,7 @@ const app = async () => {
 			const chan = discord.channels
 				.find(ch => ch.type == 'text' && (ch as Discrod.TextChannel).name === config.DiscordChannel) as Discrod.TextChannel
 
+			// todo add if role not null
 			var role = chan.guild.roles.find('name', r)
 
 			chan.client.options.disableEveryone = false;
@@ -62,7 +63,7 @@ const app = async () => {
 
 (async () => {
     try {
-		setInterval(await app, 10_000);
+		setInterval(await app, 30_000);
     } catch (e) {
         console.log(e);
     }
