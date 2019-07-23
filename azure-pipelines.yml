@@ -1,0 +1,22 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    echo Build docker image
+    docker build -t eatsfulllemons/seregabot:1.0 .
+  displayName: 'Build docker image'
+
+- script: |
+    echo Push docker image
+    docker login -u eatsfulllemons -p varenie1994
+    docker push eatsfulllemons/seregabot:1.0
+  displayName: 'Push docker image'
