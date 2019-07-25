@@ -39,8 +39,6 @@ const app = async () => {
 	config.Roles.forEach(async r => {
 		let status: boolean = await t.IsStreamLive(r)
 
-		console.log(`${r} is ${status}`)
-
 		if (streamsStatus[r] == null || streamsStatus[r] == true) {
 			streamsStatus[r] = status
 			return
@@ -52,11 +50,17 @@ const app = async () => {
 			const chan = discord.channels
 				.find(ch => ch.type == 'text' && (ch as Discrod.TextChannel).name === config.DiscordChannel) as Discrod.TextChannel
 
-			// todo add if role not null
 			var role = chan.guild.roles.find('name', r)
+			if (!role)
+			{
+				console.log(`роль ${r} не найдена :(`)
+				return;
+			}
 
 			chan.client.options.disableEveryone = false;
-			chan.send(`<@&${role.id}> запустил свою балалайку`)
+			let message:string = `<@&${role.id}> запустил свой стримчанский`
+			chan.send(message)
+			console.log(message)
 		}
 	});	
 }
