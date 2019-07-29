@@ -8,27 +8,9 @@ class Config {
 	Roles: string[]
 }
 
-const parseConf = () => {
-	let conf = new Config()
-	process.argv.forEach(a => {
-		if (a.startsWith('chan='))
-			conf.DiscordChannel = a.split('=')[1]
-		else if (a.startsWith('roles='))
-			conf.Roles = a.split('=')[1].split(',')
-		else if (a.startsWith('d_token='))
-			conf.DiscordToken = a.split('=')[1]
-		else if (a.startsWith('t_token='))
-			conf.TwitchToken = a.split('=')[1]
-	})
-
-	return conf;
-}
-
 const streamsStatus = {} as any
 
-const app = async () => {
-	const config = parseConf()
-
+const app = async (config: Config) => {
 	const t = new TwitchAPI(config.TwitchToken)
 	let discord = new Discrod.Client()
 
@@ -67,7 +49,15 @@ const app = async () => {
 
 (async () => {
     try {
-		setInterval(await app, 30_000);
+		const config: Config = {
+			TwitchToken: process.env.TWITCH_TOKEN,
+			DiscordToken: process.env.DISCORD_TOKEN,
+			Roles: process.env.ROLES.split(','),
+			DiscordChannel: process.env.CHAN,
+		}
+
+		setInterval(async () => await app(config), 30_000);
+
     } catch (e) {
         console.log(e);
     }
