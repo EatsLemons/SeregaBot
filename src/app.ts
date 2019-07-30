@@ -16,8 +16,6 @@ const app = async (config: Config) => {
 
 	await discord.login(config.DiscordToken)
 
-	console.log(streamsStatus)
-
 	config.Roles.forEach(async r => {
 		let status: boolean = await t.IsStreamLive(r)
 
@@ -42,7 +40,7 @@ const app = async (config: Config) => {
 			chan.client.options.disableEveryone = false;
 			let message:string = `<@&${role.id}> запустил свой стримчанский`
 			chan.send(message)
-			console.log(message)
+			console.log(Date.now() + message)
 		}
 	});	
 }
