@@ -1,5 +1,5 @@
 import { TwitchAPI } from "./twich/twitch";
-import * as Discrod from "discord.js";
+import { DiscrodService } from "./discrod/discord";
 
 class Config {
 	TwitchToken: string
@@ -12,9 +12,9 @@ const streamsStatus = {} as any
 
 const app = async (config: Config) => {
 	const t = new TwitchAPI(config.TwitchToken)
-	let discord = new Discrod.Client()
+	const d = new DiscrodService(config.DiscordToken)
 
-	await discord.login(config.DiscordToken)
+	let toNotify: string[] = []
 
 	config.Roles.forEach(async r => {
 		let status: boolean = await t.IsStreamLive(r)
@@ -26,23 +26,12 @@ const app = async (config: Config) => {
 
 		if (status == true) {
 			streamsStatus[r] = status
-
-			const chan = discord.channels
-				.find(ch => ch.type == 'text' && (ch as Discrod.TextChannel).name === config.DiscordChannel) as Discrod.TextChannel
-
-			var role = chan.guild.roles.find('name', r)
-			if (!role)
-			{
-				console.log(`роль ${r} не найдена :(`)
-				return;
-			}
-
-			chan.client.options.disableEveryone = false;
-			let message:string = `<@&${role.id}> запустил свой стримчанский`
-			chan.send(message)
-			console.log(Date.now() + message)
+			toNotify.push(r)		
 		}
-	});	
+	});
+
+	if (toNotify.length > 0)
+		d.Notify(toNotify)
 }
 
 (async () => {
@@ -54,7 +43,7 @@ const app = async (config: Config) => {
 			DiscordChannel: process.env.CHAN,
 		}
 
-		setInterval(async () => await app(config), 30_000);
+		setInterval(async () => await app(config), 60_000);
 
     } catch (e) {
         console.log(e);
