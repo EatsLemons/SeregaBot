@@ -46,6 +46,6 @@ const app = async (config: Config) => {
 		setInterval(async () => await app(config), 60_000);
 
     } catch (e) {
-        console.log(e);
+        console.log(Date.now() + e);
     }
 })()
